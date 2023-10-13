@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -102,5 +104,14 @@ func setPriceForBroadcaster(broadcaster string, price int) {
 
 	if resp.StatusCode != 200 {
 		fmt.Printf("Error setting price for %s: %d\n", broadcaster, price)
+	} else {
+		file, err := os.OpenFile("logfile.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		logger := log.New(file, "set price: ", log.LstdFlags)
+		logger.Printf("Price set to %d for %s\n", price, broadcaster)
 	}
 }
