@@ -21,11 +21,11 @@ func main() {
 	defaultPrice, livepeerIncPrice := getCurrentPrice()
 	fmt.Printf("Default price: %d\nLivepeer Inc price: %d\n", defaultPrice, livepeerIncPrice)
 
-	if streamCount <= lowStreamCount && livepeerIncPrice > lowPrice {
+	if livepeerIncPrice > lowPrice && (streamCount <= lowStreamCount) {
 		livepeerIncPrice = livepeerIncPrice - priceIncrement
 		fmt.Printf("Streams low (%d) and price is above %d, decreasing price to %d\n", streamCount, lowPrice, livepeerIncPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", livepeerIncPrice)
-	} else if streamCount >= highStreamCount && livepeerIncPrice < highPrice {
+	} else if livepeerIncPrice < highPrice && (streamCount >= lowStreamCount && streamCount <= highStreamCount) {
 		livepeerIncPrice = livepeerIncPrice - priceIncrement
 		fmt.Printf("Streams high (%d) and price is below %d, increasing price to %d\n", streamCount, highPrice, livepeerIncPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", livepeerIncPrice)
