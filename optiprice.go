@@ -12,7 +12,7 @@ import (
 
 func main() {
 	lowStreamCount := 4
-	lowPrice := 50
+	lowPrice := 200
 	highStreamCount := 10
 	highPrice := 700
 	priceIncrement := 50
