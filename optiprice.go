@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -11,18 +12,48 @@ import (
 )
 
 func main() {
-	lowStreamCount := 4
-	highStreamCount := 15
-	lowPrice := 200
-	targetStreamCount := 10
-	highPrice := 550
-	priceIncrement := 50
+
+	configFile, err := os.Open("config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer configFile.Close()
+
+	configBytes, err := ioutil.ReadAll(configFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	type Config struct {
+		LowStreamCount    int `json:"low_stream_count"`
+		HighStreamCount   int `json:"high_stream_count"`
+		LowPrice          int `json:"low_price"`
+		TargetStreamCount int `json:"target_stream_count"`
+		HighPrice         int `json:"high_price"`
+		PriceIncrement    int `json:"price_increment"`
+	}
+	var config Config
+	err = json.Unmarshal(configBytes, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Config: %+v\n", config)
+
+	lowStreamCount := config.LowStreamCount
+	highStreamCount := config.HighStreamCount
+	lowPrice := config.LowPrice
+	targetStreamCount := config.TargetStreamCount
+	highPrice := config.HighPrice
+	priceIncrement := config.PriceIncrement
 
 	streamCount := getStreamCount()
 	_, livepeerIncPrice := getCurrentPrice()
-	fmt.Printf("Livepeer Inc price: %d\n", livepeerIncPrice)
+	//fmt.Printf("Livepeer Inc price: %d\n", livepeerIncPrice)
 
-	if livepeerIncPrice >= lowPrice && streamCount <= highStreamCount && streamCount < targetStreamCount {
+	if streamCount <= highStreamCount && streamCount >= targetStreamCount {
+		fmt.Printf("Streams in range %d-%d at (%d), not adjusting\n", targetStreamCount, highStreamCount, streamCount)
+	} else if livepeerIncPrice-priceIncrement >= lowPrice && streamCount <= highStreamCount && streamCount < targetStreamCount {
 		newPrice := livepeerIncPrice - priceIncrement
 		fmt.Printf("Streams (%d) and price (%d), decreasing to %d\n", streamCount, livepeerIncPrice, newPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", newPrice)
@@ -31,7 +62,7 @@ func main() {
 		fmt.Printf("Streams (%d) and price (%d), increasing to %d\n", streamCount, livepeerIncPrice, newPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", newPrice)
 	} else {
-		fmt.Printf("Streams at target (%d) and price is at %d, not adjusting\n", streamCount, livepeerIncPrice)
+		fmt.Printf("No rules matched, streams (%d), price (%d), not adjusting\n", streamCount, livepeerIncPrice)
 	}
 }
 

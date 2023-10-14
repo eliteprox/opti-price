@@ -1,0 +1,8 @@
+{
+    "low_stream_count": 6,
+    "high_stream_count": 15,
+    "low_price": 200,
+    "target_stream_count": 9,
+    "high_price": 600,
+    "price_increment": 50
+}
