@@ -40,7 +40,6 @@ func main() {
 
 	fmt.Printf("Config: %+v\n", config)
 
-	lowStreamCount := config.LowStreamCount
 	highStreamCount := config.HighStreamCount
 	lowPrice := config.LowPrice
 	targetStreamCount := config.TargetStreamCount
@@ -49,7 +48,6 @@ func main() {
 
 	streamCount := getStreamCount()
 	_, livepeerIncPrice := getCurrentPrice()
-	//fmt.Printf("Livepeer Inc price: %d\n", livepeerIncPrice)
 
 	if streamCount <= highStreamCount && streamCount >= targetStreamCount {
 		fmt.Printf("Streams in range %d-%d at (%d), not adjusting\n", targetStreamCount, highStreamCount, streamCount)
@@ -57,7 +55,7 @@ func main() {
 		newPrice := livepeerIncPrice - priceIncrement
 		fmt.Printf("Streams (%d) and price (%d), decreasing to %d\n", streamCount, livepeerIncPrice, newPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", newPrice)
-	} else if livepeerIncPrice <= highPrice && streamCount >= lowStreamCount && (streamCount >= highStreamCount || streamCount > targetStreamCount) {
+	} else if livepeerIncPrice <= highPrice && (streamCount >= highStreamCount || streamCount > targetStreamCount) {
 		newPrice := livepeerIncPrice + priceIncrement
 		fmt.Printf("Streams (%d) and price (%d), increasing to %d\n", streamCount, livepeerIncPrice, newPrice)
 		setPriceForBroadcaster("0xc3c7c4C8f7061B7d6A72766Eee5359fE4F36e61E", newPrice)
