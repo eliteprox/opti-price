@@ -1,7 +1,7 @@
 # Optiprice
 Designed to be used with crontab at your preferred interval.
 Example, every 15 minutes
-`0,15 * * * * ~/optiprice/./optiprice`
+`*/15 * * * * ~/optiprice/./optiprice`
 
 Requires change to point to your prometheus database (this will be updated to read from `/status` endpoint instead soon)
 
